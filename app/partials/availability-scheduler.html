@@ -27,7 +27,7 @@
     <div class="selectable-column" selectable data-ng-repeat="day in calendar.dayMenu" data-ng-style="{ 'left' : $index * 100/calendar.dayMenuDays + '%' , 'width' : 100 /calendar.dayMenuDays + '%'}"> </div>
     <!-- markup for selected timeslots -->
     <div data-ng-class="{ 'three-day-timeslots' : calendar.dayMenuDays == 3, 'five-day-timeslots' : calendar.dayMenuDays == 5}">
-        <div class="timeslot-row" data-ng-repeat="timeslot in calendar.timeslots" id="timeslot_{{timeslot.hours}}" reveal-if="{{timeslot.hours}} == 7">
+        <div class="timeslot-row" data-ng-repeat="timeslot in calendar.timeslots" id="timeslot_{{timeslot.hours}}">
           <span class="timeslot-hour"> {{timeslot.displayTime}}</span>
 
           <div class="timeslot-column" data-ng-repeat="day in calendar.dayMenu">

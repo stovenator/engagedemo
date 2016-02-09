@@ -549,8 +549,8 @@ th {
 .bottom-margin {
   margin-bottom: 2em;
 }
-/* 
- * GRIDS 
+/*
+ * GRIDS
  * ---------------------
  */
 .grid {
@@ -586,8 +586,8 @@ th {
 .grid-pad {
   padding: 0 0 0 0;
 }
-/* 
- * END OF GRIDS 
+/*
+ * END OF GRIDS
  * ----------------------
  */
 /* base button style for the entire app. */
@@ -649,14 +649,14 @@ th {
   border-color: #CCCCCC;
   color: #999;
 }
-/* Let's use a sensible z-index scale.  
+/* Let's use a sensible z-index scale.
  * Please do not use 9999.
  *
  * You have a limited range of 1 - 9
  *
- * NOTE:  Remember, z-index acts differently when dealing with 
- *        elements that are positioned absolute.  
- *  
+ * NOTE:  Remember, z-index acts differently when dealing with
+ *        elements that are positioned absolute.
+ *
  *        I recommend reading "What No One Told You About Z-Index"
  *        http://philipwalton.com/articles/what-no-one-told-you-about-z-index/
  */
@@ -3937,7 +3937,7 @@ header .GLGLogo h1 .go-text {
   font-size: 0.75em;
   width: 155px;
   line-height: 1.5;
-  z-index: 3;
+  z-index: 2;
   color: #ffffff;
   padding: 0.6em 0;
 }
