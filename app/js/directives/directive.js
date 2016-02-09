@@ -11,20 +11,28 @@ var selectable = /*@ngInject*/ function($document) {
                 element.on('mouseleave', schedMouseLeave);
                 $document.on('mousemove', schedMouseMove);
 
-                //Add Mouse trailer
+                //Add Red Timer block trailer
                 console.log("Add Red Timer Block");
                 addTimerblock();
 
             }
 
+
+            // This is a document listener, that watches the mouse move anywhere on the document
             function schedMouseMove(event){
                 console.log("Moving");
+                // ClientY is the exact position of the mouse on the screen
                 var y = event.clientY;
+                // OffsetY is the relative position of the mouse in relation to the element
                 var offsetY = event.offsetY;
                 // If the offset is negative (occassionally happens) , just cheat and set to 0
                 offsetY = offsetY < 0 ? 0 : offsetY;
                 moveTimerBlock(offsetY);
+                calculateAndSetTimerText(offsetY);
+
             }
+
+            // This is an element listener that watches for the mouse to leave the element
             function schedMouseLeave(event){
                 console.log("Leaving");
                 //Turn off listeners
@@ -35,6 +43,8 @@ var selectable = /*@ngInject*/ function($document) {
                 //Remove Timerblock
                 removeTimerblock();
             }
+
+            // This is an element listener that watches for the mouse to click down on the element
             function schedMouseDown(event){
                 console.log("Down");
             }
@@ -64,6 +74,22 @@ var selectable = /*@ngInject*/ function($document) {
             function removeTimerblock(){
                 var timeEl = angular.element(document.querySelectorAll("[timerblock]"));
                 timeEl.remove();
+            }
+
+            function calculateAndSetTimerText(y){
+                var hours =Math.floor(y/50);
+                var minutes = Math.floor((y % 50) / 12.5) * 15;
+                if (minutes === 0){
+                    minutes = "00";
+                }
+                setTimerText(hours + ":" + minutes);
+            }
+
+            function setTimerText(text) {
+                var timeEl = angular.element(document.querySelectorAll(".timerblock-text"));
+                if (timeEl.length > 0) {
+                    timeEl.text(text);
+                }
             }
 
         }
