@@ -6,6 +6,8 @@ module.exports = /*@ngInject*/ function($scope) {
     $scope.calendar = {};
     $scope.calendar.dayMenuDays = 3;
     $scope.calendar.availabilities = [];
+    $scope.adjusting = {};
+    $scope.moveable = {};
 
     $scope.fillDayMenu = function(){
         console.log($scope.calendar.dayMenuDays);
@@ -30,6 +32,12 @@ module.exports = /*@ngInject*/ function($scope) {
 
     $scope.getUUID = function(){
         return Math.floor((1 + Math.random()) * 0x10000);
+    };
+
+    $scope.removeSelectedTimeslot = function(uuid){
+        console.log("Removing:", uuid);
+        var availElement = document.getElementById(uuid);
+        availElement.remove();
     };
 
  $scope.fillDayMenu();

@@ -27,6 +27,7 @@
   engageDemo.directive('adjustable', engageDirectives.adjustable);
   engageDemo.directive('schedulable', engageDirectives.schedulable);
   engageDemo.directive('selectable', engageDirectives.selectable);
+  engageDemo.directive('moveable', engageDirectives.moveable);
 
 
 }());

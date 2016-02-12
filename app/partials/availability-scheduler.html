@@ -1,16 +1,16 @@
 <div class="calendar-navbar-container">
   <div moveable style="position: relative; border: 1px solid blue; background: rgba(0,0,0,0.5); display: none; width: 155px; height: 35px; zIndex: 100; color: white;"> Mover </div>
   <ul class="calendar-navbar">
-    <li data-ng-class="{ 'select' : calendar.dayMenuDays == 3}" data-ng-click="calendar.dayMenuDays = 3; fillDayMenu()">3 Days</li>
-    <li data-ng-class="{ 'select' : calendar.dayMenuDays == 5}" data-ng-click="calendar.dayMenuDays = 5; fillDayMenu() ">5 Days</li>
+    <li ng-class="{ 'select' : calendar.dayMenuDays == 3}" ng-click="calendar.dayMenuDays = 3; fillDayMenu()">3 Days</li>
+    <li ng-class="{ 'select' : calendar.dayMenuDays == 5}" ng-click="calendar.dayMenuDays = 5; fillDayMenu() ">5 Days</li>
   </ul>
 </div>
 <div class="calendar-day-header">
   <div class="calendar-time-column"><!--<span aria-hidden="true" data-icon="B"></span>--></div>
 
 
-  <div class="calendar-day-container" data-ng-class="{ 'three-day-menu' : calendar.dayMenuDays == 3, 'five-day-menu' : calendar.dayMenuDays == 5}">
-    <div class="calendar-day-column"  data-ng-repeat="day in calendar.dayMenu">
+  <div class="calendar-day-container" ng-class="{ 'three-day-menu' : calendar.dayMenuDays == 3, 'five-day-menu' : calendar.dayMenuDays == 5}">
+    <div class="calendar-day-column"  ng-repeat="day in calendar.dayMenu">
         <div class="date-select-container">
             <p class="calendar-date-heading">{{ day.day}} {{ day.date }}</p>
         </div>
@@ -24,17 +24,17 @@
     <div class="hour-item"></div>
   </div>
   <div class="calendar-timeslots">
-    <div class="selectable-column" selectable data-ng-repeat="day in calendar.dayMenu" data-ng-style="{ 'left' : $index * 100/calendar.dayMenuDays + '%' , 'width' : 100 /calendar.dayMenuDays + '%'}"> </div>
+    <div class="selectable-column" selectable ng-repeat="day in calendar.dayMenu" ng-style="{ 'left' : $index * 100/calendar.dayMenuDays + '%' , 'width' : 100 /calendar.dayMenuDays + '%'}"> </div>
     <!-- markup for selected timeslots -->
-    <div data-ng-class="{ 'three-day-timeslots' : calendar.dayMenuDays == 3, 'five-day-timeslots' : calendar.dayMenuDays == 5}">
+    <div ng-class="{ 'three-day-timeslots' : calendar.dayMenuDays == 3, 'five-day-timeslots' : calendar.dayMenuDays == 5}">
         <div class="timeslot-row" style="height: 0px">
-            <div class="timeslot-column" data-ng-repeat="day in calendar.dayMenu" style="height: 0px" id="timeslot-column-{{$index}}">
+            <div class="timeslot-column" ng-repeat="day in calendar.dayMenu" style="height: 0px" id="timeslot-column-{{$index}}">
             </div>
         </div>
-        <div class="timeslot-row" data-ng-repeat="timeslot in calendar.timeslots" id="timeslot_{{timeslot.hours}}">
+        <div class="timeslot-row" ng-repeat="timeslot in calendar.timeslots" id="timeslot_{{timeslot.hours}}">
           <span class="timeslot-hour"> {{timeslot.displayTime}}</span>
 
-          <div class="timeslot-column" data-ng-repeat="day in calendar.dayMenu">
+          <div class="timeslot-column" ng-repeat="day in calendar.dayMenu">
               <div class="timeslot-midHour"></div>
               <div class="timeslot-midHour"></div>
           </div>
