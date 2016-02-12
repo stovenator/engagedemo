@@ -5,6 +5,7 @@ module.exports = /*@ngInject*/ function($scope) {
     $scope.test = "Testing 123...";
     $scope.calendar = {};
     $scope.calendar.dayMenuDays = 3;
+    $scope.calendar.availabilities = [];
 
     $scope.fillDayMenu = function(){
         console.log($scope.calendar.dayMenuDays);
@@ -25,6 +26,10 @@ module.exports = /*@ngInject*/ function($scope) {
             returnObj[i] = {hours : myDay.hours(), displayTime: myDay.format('hh:mm:a')};
         }
         $scope.calendar.timeslots = returnObj;
+    };
+
+    $scope.getUUID = function(){
+        return Math.floor((1 + Math.random()) * 0x10000);
     };
 
  $scope.fillDayMenu();
