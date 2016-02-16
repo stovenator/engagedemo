@@ -72,12 +72,12 @@ var selectable = /*@ngInject*/ function($compile, $document) {
 
             scope.calendar.selectingState = false;
             //Turn on mouse down/leave/move listeners
-            element.on('mousedown', selectMouseDown);
-            element.on('mouseleave', selectMouseLeave);
-            element.on('mouseenter', selectMouseEnter);
-            $document.on('mousemove', selectMouseMoveMouseUp);
+            element.on('mousedown', selectableMouseDown);
+            element.on('mouseleave', selectableMouseLeave);
+            element.on('mouseenter', selectableMouseEnter);
+            $document.on('mousemove', selectableMouseMove);
 
-            function selectMouseEnter(event) {
+            function selectableMouseEnter(event) {
                 if (!scope.calendar.selectingState && !scope.moveable.isMoving){
 
                     //Add Red Timer block trailer
@@ -87,7 +87,7 @@ var selectable = /*@ngInject*/ function($compile, $document) {
 
 
             // This is a document listener, that watches the mouse move anywhere on the document
-            function selectMouseMoveMouseUp(event){
+            function selectableMouseMove(event){
                 // addTimerblock();
                 // ClientY is the exact position of the mouse on the screen
                 var y = event.clientY;
@@ -100,7 +100,7 @@ var selectable = /*@ngInject*/ function($compile, $document) {
                 setTimerText(timerText);
             }
 
-            function selectMouseMoveMouseDown(event){
+            function selectableMouseMoveClicked(event){
                 // ClientY is the exact position of the mouse on the screen
                 var clientY = event.clientY;
                 // OffsetY is the relative position of the mouse in relation to the element
@@ -114,13 +114,13 @@ var selectable = /*@ngInject*/ function($compile, $document) {
             }
 
             // This is an element listener that watches for the mouse to leave the element
-            function selectMouseLeave(event){
+            function selectableMouseLeave(event){
                 //Remove Timerblock
                 removeTimerblock();
             }
 
             // This is an element listener that watches for the mouse to click down on the element
-            function selectMouseDown(event){
+            function selectableMouseDown(event){
                 scope.calendar.selectingState = true;
                 var clientY = event.clientY;
                 //Stop any other mouse events to click through below
@@ -144,16 +144,16 @@ var selectable = /*@ngInject*/ function($compile, $document) {
                 // Create mouseup events on the document
                 // instead of on the element, so that if the mouseup occurs elsewhere on the page
                 // we can still trap them
-                $document.on('mouseup', selectMouseUp);
+                $document.on('mouseup', selectableMouseUp);
                 //Turn off the mousemove event for while the mouse is Up
 
                 $document.off('mousemove');
                 //Turn on the mousemove event for while the mouse is Down
-                $document.on('mousemove', selectMouseMoveMouseDown);
+                $document.on('mousemove', selectableMouseMoveClicked);
             }
 
             // This is an element listener that watches for the mouse to be released, anywhere on the document
-            function selectMouseUp(event){
+            function selectableMouseUp(event){
                 var clientY = event.clientY;
                 // Get the top and height values to pass to the availability block
                 var highlightVals = moveHighlight(clientY);
@@ -167,7 +167,7 @@ var selectable = /*@ngInject*/ function($compile, $document) {
                 $document.off('mousemove');
                 $document.off('mouseup');
                 //Turn on the mousemove event for while the mouse is Up
-                $document.on('mousemove', selectMouseMoveMouseUp);
+                $document.on('mousemove', selectableMouseMove);
                 console.log("Fire event for item created. New times are: ", calculateText(highlightVals));
             }
 
@@ -338,6 +338,12 @@ var schedulable = /*@ngInject*/ function($document) {
             element.on('mouseenter', schedMouseEnter);
             function schedMouseEnter(event) {
                 console.log("Entered Schedulable", element[0].id);
+                element.on('mousedown', schedMouseDown);
+            }
+            function schedMouseDown(event){
+                event.preventDefault();
+                event.stopPropagation();
+                console.log("Mouse Down");
             }
         }
     };
