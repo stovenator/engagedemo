@@ -525,13 +525,14 @@ var moveable = /*@ngInject*/ function($document) {
                     top: offsetY + 'px',
                     zIndex: 5
                 });
-                if (clientX < seClientLeft && !scope.$first){
+                console.log(clientX, seClientLeft, curSeColumn);
+                if (clientX < seClientLeft && curSeColumn > 0){
                     curSeColumn = curSeColumn - 1;
                     se.detach();
                     columnToAppend = angular.element(document.getElementById('timeslot-column-' + curSeColumn));
                     columnToAppend.append(se);
                 }
-                else if(clientX > seClientLeft + elementWidth && !scope.$last){
+                else if(clientX > seClientLeft + elementWidth && curSeColumn < scope.calendar.dayMenu.length - 1){
                     curSeColumn = curSeColumn + 1;
                     se.detach();
                     columnToAppend = angular.element(document.getElementById('timeslot-column-' + curSeColumn));
