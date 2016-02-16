@@ -452,27 +452,27 @@ var adjustable = /*@ngInject*/ function($document) {
 var moveable = /*@ngInject*/ function($document) {
     return {
         'restrict' : 'A',
-        link: function ($scope, element, attr) {
-            $scope.moveable.isMoving = false;
+        link: function (scope, element, attr) {
+            scope.moveable.isMoving = false;
             element.on('mousedown', moveableMouseDown);
             var elHeight;
             var elementWidth;
             var seClientLeft;
-            var curSeColumn = $scope.$index;
+            var curSeColumn = scope.$index;
 
             function moveableMouseDown(event) {
                 event.preventDefault();
                 event.stopPropagation();
                 if (!angular.element(event.target).hasClass('timeslots-remove')){
-                    $scope.moveable.isMoving = true;
+                    scope.moveable.isMoving = true;
                     createShadowBlock();
                     // Turn on mousemove listener on document
                     $document.on('mousemove', moveableMouseMove);
                     $document.on('mouseup', moveableMouseUp);
                     var se = angular.element(document.querySelectorAll(".shadowelement"));
-                    $scope.moveable.offsetStartY = se.prop("offsetTop");
-                    $scope.moveable.clientStartY = event.clientY;
-                    $scope.moveable.initialScrollTop = document.querySelectorAll(".calendar-timeslots-container")[0].scrollTop;
+                    scope.moveable.offsetStartY = se.prop("offsetTop");
+                    scope.moveable.clientStartY = event.clientY;
+                    scope.moveable.initialScrollTop = document.querySelectorAll(".calendar-timeslots-container")[0].scrollTop;
                 }
             }
 
@@ -488,7 +488,7 @@ var moveable = /*@ngInject*/ function($document) {
                     height: seHeight + 'px'
                 });
                 setAvailabilityBlockText({height: seHeight, top: seTop});
-                $scope.moveable.isMoving = false;
+                scope.moveable.isMoving = false;
                 element.detach();
                 columnToAppend = angular.element(document.getElementById('timeslot-column-' + curSeColumn));
                 columnToAppend.append(element);
@@ -502,14 +502,14 @@ var moveable = /*@ngInject*/ function($document) {
                 elementWidth = element.prop("offsetWidth");
                 elHeight = element.prop("offsetHeight");
                 var y = event.clientY;
-                var yDistance = event.clientY - $scope.moveable.clientStartY;
-                var offsetY = $scope.moveable.offsetStartY + yDistance;
+                var yDistance = event.clientY - scope.moveable.clientStartY;
+                var offsetY = scope.moveable.offsetStartY + yDistance;
                 if (offsetY > 0){
                     moveShadowBlock(offsetY, clientX);
                     var shadowText = calculateText({top : offsetY, height : elHeight});
                     setShadowText(shadowText);
                 }
-                scrollWhileDragging($scope.moveable.initialScrollTop, event.clientY);
+                scrollWhileDragging(scope.moveable.initialScrollTop, event.clientY);
             }
 
             function moveShadowBlock(offsetY, clientX){
@@ -519,13 +519,13 @@ var moveable = /*@ngInject*/ function($document) {
                     top: offsetY + 'px',
                     zIndex: 5
                 });
-                if (clientX < seClientLeft && !$scope.$first){
+                if (clientX < seClientLeft && !scope.$first){
                     curSeColumn = curSeColumn - 1;
                     se.detach();
                     columnToAppend = angular.element(document.getElementById('timeslot-column-' + curSeColumn));
                     columnToAppend.append(se);
                 }
-                else if(clientX > seClientLeft + elementWidth && !$scope.$last){
+                else if(clientX > seClientLeft + elementWidth && !scope.$last){
                     curSeColumn = curSeColumn + 1;
                     se.detach();
                     columnToAppend = angular.element(document.getElementById('timeslot-column-' + curSeColumn));
