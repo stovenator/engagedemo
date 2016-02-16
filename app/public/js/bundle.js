@@ -279,6 +279,9 @@ var selectable = /*@ngInject*/ function($compile, $document) {
                 // We have to $compile this, so that angular knows about the schedulable attribute (to enable the directive)
                 columnToAppend.append($compile(availElement)(scope));
                 var ae = getAvailabilityBlock(UUID);
+
+                // Set to nearest quarter hour
+                vals.height = Math.floor(vals.height / quarterHeight) * quarterHeight;
                 ae.css({
                     height: vals.height  + 'px',
                     top: vals.top + 'px',
@@ -536,6 +539,8 @@ var moveable = /*@ngInject*/ function($document) {
                 var se = angular.element(document.querySelectorAll(".shadowelement"));
                 var seTop = se.prop("offsetTop");
                 var seHeight = se.prop("offsetHeight");
+                seTop = Math.floor(seTop / quarterHeight) * quarterHeight;
+                seHeight = Math.floor(seHeight / quarterHeight) * quarterHeight;
                 se.remove();
                 element.css({
                     top: seTop + 'px',
