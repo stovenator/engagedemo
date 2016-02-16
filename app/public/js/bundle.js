@@ -51,41 +51,55 @@ var halfHeight = 25;
 var hourHeight = 50;
 
 
-    function calculateText(vals){
-        var startHour = getHours(vals.top);
-        var startMinutes = getMinutes(vals.top);
-        var startAMPM = startHour <= 11 ? 'am' : 'pm';
-        var endHour = getHours(vals.top + vals.height);
-        var endMinutes = getMinutes(vals.top + vals.height);
-        var endAMPM = endHour <= 11 ? 'am' : 'pm';
-        return displayHour(startHour) + ":" + displayMinutes(startMinutes) + startAMPM + " - " + displayHour(endHour) + ":" + displayMinutes(endMinutes) + endAMPM;
-    }
+function calculateText(vals){
+    var startHour = getHours(vals.top);
+    var startMinutes = getMinutes(vals.top);
+    var startAMPM = Math.ceil((startHour + 1) / 12) % 2 == 1 ? 'am' : 'pm';
+    var endHour = getHours(vals.top + vals.height);
+    var endMinutes = getMinutes(vals.top + vals.height);
+    var endAMPM = Math.ceil((endHour + 1) / 12) % 2 == 1 ? 'am' : 'pm';
+    return displayHour(startHour) + ":" + displayMinutes(startMinutes) + startAMPM + " - " + displayHour(endHour) + ":" + displayMinutes(endMinutes) + endAMPM;
+}
 
-    function getHours(offsetY){
-        return Math.floor(offsetY/hourHeight);
-    }
+function getHours(offsetY){
+    return Math.floor(offsetY/hourHeight);
+}
 
-    function displayHour(hour){
-        if (hour === 0){
-            return 12;
-        }
-        else if(hour > 12){
-            return hour - 12;
-        }
-        else{
-            return hour;
-        }
+function displayHour(hour){
+    if (hour === 0){
+        return 12;
     }
-    function displayMinutes(minutes){
-        if (minutes === 0){
-            minutes = "00";
-        }
-        return minutes;
+    else if(hour > 12){
+        hour = hour - 12;
+        return displayHour(hour);
     }
+    else{
+        return hour;
+    }
+}
+function displayMinutes(minutes){
+    if (minutes === 0){
+        minutes = "00";
+    }
+    return minutes;
+}
 
-    function getMinutes(offsetY){
-        return Math.floor((offsetY % hourHeight) / quarterHeight) * 15;
+function getMinutes(offsetY){
+    return Math.floor((offsetY % hourHeight) / quarterHeight) * 15;
+}
+
+function scrollWhileDragging(initialScrollTop, clientY){
+    var timeslotsContainer = document.querySelectorAll(".calendar-timeslots-container")[0];
+    var calendarContainer = document.querySelectorAll(".calendar-container")[0];
+    var calBottom = calendarContainer.offsetHeight + calendarContainer.offsetTop;
+    var calTop = timeslotsContainer.getBoundingClientRect().top;
+    if (clientY > calBottom){
+        timeslotsContainer.scrollTop  = initialScrollTop + (clientY - calBottom);
     }
+    else if(clientY < calTop){
+        timeslotsContainer.scrollTop  = initialScrollTop - (calTop - clientY);
+    }
+}
 
 // Selectable Columns can have an availability added to them
 var selectable = /*@ngInject*/ function($compile, $document) {
@@ -144,6 +158,7 @@ var selectable = /*@ngInject*/ function($compile, $document) {
                 var highlightVals = moveHighlight(clientY);
                 var hText = calculateText(highlightVals);
                 setHighlightText(hText);
+                scrollWhileDragging(scope.calendar.initialScrollTop, clientY);
             }
 
             // This is an element listener that watches for the mouse to leave the element
@@ -169,6 +184,7 @@ var selectable = /*@ngInject*/ function($compile, $document) {
 
                 scope.calendar.startOffsetY = offsetY;
                 scope.calendar.startClientY = clientY;
+                scope.calendar.initialScrollTop = document.querySelectorAll(".calendar-timeslots-container")[0].scrollTop;
 
                 removeTimerblock();
                 addHighlight(offsetY);
@@ -204,6 +220,7 @@ var selectable = /*@ngInject*/ function($compile, $document) {
 
             function addHighlight(offsetY){
                 var highlightElement = '<div highlight class="slotHighlight"> </div>';
+                var highlightTextElement = '<p class="highlight-text" style="bottom: 5px;position: absolute;text-align: center;width: 100%;"> </p>';
                 var hlElement = getHighlightBlock();
                 if (hlElement.length === 0){
                     element.parent().append(highlightElement);
@@ -214,8 +231,8 @@ var selectable = /*@ngInject*/ function($compile, $document) {
                         left:  (element.prop("offsetLeft") + 10) + 'px',
                         width: (element.prop("offsetWidth") -20) + 'px',
                         height: halfHeight + 'px',
-                        //minHeight: halfHeight + 'px',
                     });
+                    hlElement.append(highlightTextElement);
                 }
             }
 
@@ -231,8 +248,15 @@ var selectable = /*@ngInject*/ function($compile, $document) {
                 // If we are above the starting point
                 else{
                     elementTop = scope.calendar.startOffsetY - (scope.calendar.startClientY - clientY);
-                    elementHeight = (scope.calendar.startClientY - clientY);
+                    if (elementTop < 0){
+                        elementTop = 0;
+                        elementHeight = scope.calendar.startOffsetY;
+                    }
+                    else{
+                        elementHeight = scope.calendar.startClientY - clientY;
+                    }
                 }
+                elementHeight = elementHeight < hourHeight ? hourHeight : elementHeight;
                 hlElement.css({
                     height: elementHeight  + 'px',
                     top: elementTop + 'px',
@@ -335,7 +359,8 @@ var selectable = /*@ngInject*/ function($compile, $document) {
             function setHighlightText(text) {
                 var hlElement = getHighlightBlock();
                 if (hlElement.length > 0) {
-                    hlElement.text(text);
+                    var hlTextElement = angular.element(hlElement[0].querySelectorAll(".highlight-text"));
+                    hlTextElement.text(text);
                 }
             }
 
@@ -346,6 +371,7 @@ var selectable = /*@ngInject*/ function($compile, $document) {
                     angular.element(ae[0].querySelectorAll(".timeslots-range")).text(availText);
                 }
             }
+
 
         }
     };
@@ -386,14 +412,23 @@ var adjustable = /*@ngInject*/ function($document) {
                     glassEl.remove();
                 }
             });
+
             element.on('mousedown', adjMousedown);
+
             function adjMousemove(event) {
                 var newHeight = scope.adjusting.originalHeight;
                 var newTop = scope.adjusting.originalTop;
                 var yDistance = event.clientY - (scope.adjusting.startY - scope.adjusting.offsetY);
                 if (scope.adjhandle == 'top'){
-                    newHeight = scope.adjusting.originalHeight - (Math.floor(yDistance / (hourHeight/4)) * (hourHeight/4));
                     newTop = scope.adjusting.originalTop + (Math.floor(yDistance / (hourHeight/4)) * (hourHeight/4));
+                    if (newTop < 0){
+                        newTop = 0;
+                        newHeight = scope.adjusting.originalBottom;
+                    }
+                    else {
+                        newHeight = scope.adjusting.originalHeight - (Math.floor(yDistance / (hourHeight/4)) * (hourHeight/4));
+                    }
+
                     if (newHeight < hourHeight){
                         newHeight = hourHeight;
                         newTop = scope.adjusting.originalBottom - hourHeight;
@@ -416,6 +451,7 @@ var adjustable = /*@ngInject*/ function($document) {
                     console.log("Should not be able to get here.");
                 }
                 setAvailabilityBlockText({height: newHeight, top: newTop});
+                scrollWhileDragging(scope.adjusting.initialScrollTop, event.clientY);
             }
             function adjMouseup(event) {
                 $document.off('mouseup');
@@ -438,6 +474,7 @@ var adjustable = /*@ngInject*/ function($document) {
                 scope.adjusting.originalTop = scope.adjusting.scheduleElement[0].offsetTop;
                 scope.adjusting.originalHeight = scope.adjusting.scheduleElement[0].offsetHeight;
                 scope.adjusting.originalBottom = scope.adjusting.originalTop + scope.adjusting.originalHeight;
+                scope.adjusting.initialScrollTop = document.querySelectorAll(".calendar-timeslots-container")[0].scrollTop;
                 var glassElement = '<div class="glass-viewport"> </div>';
                 element.append(glassElement);
 
@@ -467,6 +504,8 @@ var moveable = /*@ngInject*/ function($document) {
             var curSeColumn = $scope.$index;
 
             function moveableMouseDown(event) {
+                event.preventDefault();
+                event.stopPropagation();
                 if (!angular.element(event.target).hasClass('timeslots-remove')){
                     $scope.moveable.isMoving = true;
                     createShadowBlock();
@@ -476,6 +515,7 @@ var moveable = /*@ngInject*/ function($document) {
                     var se = angular.element(document.querySelectorAll(".shadowelement"));
                     $scope.moveable.offsetStartY = se.prop("offsetTop");
                     $scope.moveable.clientStartY = event.clientY;
+                    $scope.moveable.initialScrollTop = document.querySelectorAll(".calendar-timeslots-container")[0].scrollTop;
                 }
             }
 
@@ -506,9 +546,12 @@ var moveable = /*@ngInject*/ function($document) {
                 var y = event.clientY;
                 var yDistance = event.clientY - $scope.moveable.clientStartY;
                 var offsetY = $scope.moveable.offsetStartY + yDistance;
-                moveShadowBlock(offsetY, clientX);
-                var shadowText = calculateText({top : offsetY, height : elHeight});
-                setShadowText(shadowText);
+                if (offsetY > 0){
+                    moveShadowBlock(offsetY, clientX);
+                    var shadowText = calculateText({top : offsetY, height : elHeight});
+                    setShadowText(shadowText);
+                }
+                scrollWhileDragging($scope.moveable.initialScrollTop, event.clientY);
             }
 
             function moveShadowBlock(offsetY, clientX){
