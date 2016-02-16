@@ -31,7 +31,7 @@
             <div class="timeslot-column" ng-repeat="day in calendar.dayMenu" style="height: 0px" id="timeslot-column-{{$index}}">
             </div>
         </div>
-        <div class="timeslot-row" ng-repeat="timeslot in calendar.timeslots" id="timeslot_{{timeslot.hours}}">
+        <div class="timeslot-row" ng-repeat="timeslot in calendar.timeslots" id="timeslot_{{timeslot.hours}}" reveal-if="{{timeslot.hours}} == 7">
           <span class="timeslot-hour"> {{timeslot.displayTime}}</span>
 
           <div class="timeslot-column" ng-repeat="day in calendar.dayMenu">

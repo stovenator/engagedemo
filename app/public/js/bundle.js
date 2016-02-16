@@ -45,47 +45,47 @@ module.exports = /*@ngInject*/ function($scope) {
  $scope.fillTimeslots();
 };
 
-},{"moment-timezone":5}],2:[function(require,module,exports){
+},{"moment-timezone":6}],2:[function(require,module,exports){
 var quarterHeight = 12.5;
 var halfHeight = 25;
 var hourHeight = 50;
 
 
-            function calculateText(vals){
-                var startHour = getHours(vals.top);
-                var startMinutes = getMinutes(vals.top);
-                var startAMPM = startHour <= 11 ? 'am' : 'pm';
-                var endHour = getHours(vals.top + vals.height);
-                var endMinutes = getMinutes(vals.top + vals.height);
-                var endAMPM = endHour <= 11 ? 'am' : 'pm';
-                return displayHour(startHour) + ":" + displayMinutes(startMinutes) + startAMPM + " - " + displayHour(endHour) + ":" + displayMinutes(endMinutes) + endAMPM;
-            }
+    function calculateText(vals){
+        var startHour = getHours(vals.top);
+        var startMinutes = getMinutes(vals.top);
+        var startAMPM = startHour <= 11 ? 'am' : 'pm';
+        var endHour = getHours(vals.top + vals.height);
+        var endMinutes = getMinutes(vals.top + vals.height);
+        var endAMPM = endHour <= 11 ? 'am' : 'pm';
+        return displayHour(startHour) + ":" + displayMinutes(startMinutes) + startAMPM + " - " + displayHour(endHour) + ":" + displayMinutes(endMinutes) + endAMPM;
+    }
 
-            function getHours(offsetY){
-                return Math.floor(offsetY/hourHeight);
-            }
+    function getHours(offsetY){
+        return Math.floor(offsetY/hourHeight);
+    }
 
-            function displayHour(hour){
-                if (hour === 0){
-                    return 12;
-                }
-                else if(hour > 12){
-                    return hour - 12;
-                }
-                else{
-                    return hour;
-                }
-            }
-            function displayMinutes(minutes){
-                if (minutes === 0){
-                    minutes = "00";
-                }
-                return minutes;
-            }
+    function displayHour(hour){
+        if (hour === 0){
+            return 12;
+        }
+        else if(hour > 12){
+            return hour - 12;
+        }
+        else{
+            return hour;
+        }
+    }
+    function displayMinutes(minutes){
+        if (minutes === 0){
+            minutes = "00";
+        }
+        return minutes;
+    }
 
-            function getMinutes(offsetY){
-                return Math.floor((offsetY % hourHeight) / quarterHeight) * 15;
-            }
+    function getMinutes(offsetY){
+        return Math.floor((offsetY % hourHeight) / quarterHeight) * 15;
+    }
 
 // Selectable Columns can have an availability added to them
 var selectable = /*@ngInject*/ function($compile, $document) {
@@ -243,7 +243,7 @@ var selectable = /*@ngInject*/ function($compile, $document) {
             function addAvailabilityBlock(vals){
                 var UUID = scope.getUUID();
                 var availElement = '<div moveable class="timeslots-selected cm-mark--storm is-show" id="' + UUID + '"> </div>';
-                var removeElement = '<div class="timeslots-remove" ng-click="removeSelectedTimeslot(' + UUID + ');">X</div>';
+                var removeElement = '<div class="timeslots-remove" ng-click="removeSelectedTimeslot(' + UUID + ');$event.stopPropagation();$event.preventDefault();">X</div>';
                 var availInterior = '<div class="timeslots-selected-info"> </div>';
                 var titleElement = '<p class="timeslots-availTitle">My Availability</p>';
                 var textElement = '<p class="timeslots-range"> </p>';
@@ -265,7 +265,7 @@ var selectable = /*@ngInject*/ function($compile, $document) {
                 aeInterior.append(titleElement);
                 aeInterior.append(textElement);
                 // We have to $compile, to cause angular to know about this new ng-click
-                aeInterior.append($compile(removeElement)(scope));
+                ae.append($compile(removeElement)(scope));
                 setAvailabilityBlockText(UUID, vals);
             }
 
@@ -427,7 +427,6 @@ var adjustable = /*@ngInject*/ function($document) {
                 }
             }
             function adjMousedown(event) {
-                console.log("Mousedown");
                 // Stop other click event underneath the selection
                 event.preventDefault();
                 event.stopPropagation();
@@ -449,7 +448,6 @@ var adjustable = /*@ngInject*/ function($document) {
             function setAvailabilityBlockText(vals) {
                 var ae = element.parent();
                 var availText = calculateText(vals);
-                console.log(element);
                 angular.element(element.parent()[0].querySelectorAll(".timeslots-range")).text(availText);
             }
         }
@@ -466,18 +464,19 @@ var moveable = /*@ngInject*/ function($document) {
             var elHeight;
             var elementWidth;
             var seClientLeft;
-            var curSeColumn;
+            var curSeColumn = $scope.$index;
 
             function moveableMouseDown(event) {
-                $scope.moveable.isMoving = true;
-                createShadowBlock();
-                // Turn on mousemove listener on document
-                $document.on('mousemove', moveableMouseMove);
-                $document.on('mouseup', moveableMouseUp);
-                var se = angular.element(document.querySelectorAll(".shadowelement"));
-                $scope.moveable.offsetStartY = se.prop("offsetTop");
-                $scope.moveable.clientStartY = event.clientY;
-                curSeColumn = $scope.$index;
+                if (!angular.element(event.target).hasClass('timeslots-remove')){
+                    $scope.moveable.isMoving = true;
+                    createShadowBlock();
+                    // Turn on mousemove listener on document
+                    $document.on('mousemove', moveableMouseMove);
+                    $document.on('mouseup', moveableMouseUp);
+                    var se = angular.element(document.querySelectorAll(".shadowelement"));
+                    $scope.moveable.offsetStartY = se.prop("offsetTop");
+                    $scope.moveable.clientStartY = event.clientY;
+                }
             }
 
             function moveableMouseUp(event){
@@ -508,7 +507,6 @@ var moveable = /*@ngInject*/ function($document) {
                 var yDistance = event.clientY - $scope.moveable.clientStartY;
                 var offsetY = $scope.moveable.offsetStartY + yDistance;
                 moveShadowBlock(offsetY, clientX);
-                console.log("ElHeight", elHeight);
                 var shadowText = calculateText({top : offsetY, height : elHeight});
                 setShadowText(shadowText);
             }
@@ -521,14 +519,12 @@ var moveable = /*@ngInject*/ function($document) {
                     zIndex: 5
                 });
                 if (clientX < seClientLeft && !$scope.$first){
-                    console.log("Move left one column");
                     curSeColumn = curSeColumn - 1;
                     se.detach();
                     columnToAppend = angular.element(document.getElementById('timeslot-column-' + curSeColumn));
                     columnToAppend.append(se);
                 }
                 else if(clientX > seClientLeft + elementWidth && !$scope.$last){
-                    console.log("Move right one column");
                     curSeColumn = curSeColumn + 1;
                     se.detach();
                     columnToAppend = angular.element(document.getElementById('timeslot-column-' + curSeColumn));
@@ -556,7 +552,6 @@ var moveable = /*@ngInject*/ function($document) {
                 var shadowInterior = '<div class="timeslots-selected-info"> </div>';
                 var titleElement = '<p class="timeslots-availTitle">My Availability</p>';
                 var textElement = '<p class="timeslots-range"> </p>';
-                console.log(element.parent());
                 element.parent().append(shadowElement);
                 var se = angular.element(document.querySelectorAll(".shadowelement"));
                 if (se.length > 0){
@@ -583,6 +578,23 @@ exports.schedulable = schedulable;
 exports.moveable = moveable;
 
 },{}],3:[function(require,module,exports){
+'use strict';
+
+module.exports = /*@ngInject*/ function ($timeout) {
+    return {
+        restrict: 'A',
+        link: function ($scope, $elem, attrs) {
+            if (attrs.revealIf && $scope.$eval(attrs.revealIf)) {
+                $timeout(function () {
+                    $elem[0].scrollTop = 0;
+                    $elem[0].scrollIntoView();
+                }, 10);
+            }
+        }
+    };
+};
+
+},{}],4:[function(require,module,exports){
 (function () {
 
 'use strict';
@@ -606,18 +618,19 @@ exports.moveable = moveable;
            redirectTo: '/'
         });
     }
-  ]);
+  ])
 
-  engageDemo.controller('MainController', require('./controllers/controller'));
-  engageDemo.directive('adjustable', engageDirectives.adjustable);
-  engageDemo.directive('schedulable', engageDirectives.schedulable);
-  engageDemo.directive('selectable', engageDirectives.selectable);
-  engageDemo.directive('moveable', engageDirectives.moveable);
+  .controller('MainController', require('./controllers/controller'))
+  .directive('adjustable', engageDirectives.adjustable)
+  .directive('schedulable', engageDirectives.schedulable)
+  .directive('selectable', engageDirectives.selectable)
+  .directive('moveable', engageDirectives.moveable)
+  .directive('revealIf', require('./directives/reveal-if'));
 
 
 }());
 
-},{"./controllers/controller":1,"./directives/directive":2}],4:[function(require,module,exports){
+},{"./controllers/controller":1,"./directives/directive":2,"./directives/reveal-if":3}],5:[function(require,module,exports){
 module.exports={
 	"version": "2015g",
 	"zones": [
@@ -1208,11 +1221,11 @@ module.exports={
 		"Pacific/Pohnpei|Pacific/Ponape"
 	]
 }
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 var moment = module.exports = require("./moment-timezone");
 moment.tz.load(require('./data/packed/latest.json'));
 
-},{"./data/packed/latest.json":4,"./moment-timezone":6}],6:[function(require,module,exports){
+},{"./data/packed/latest.json":5,"./moment-timezone":7}],7:[function(require,module,exports){
 //! moment-timezone.js
 //! version : 0.5.0
 //! author : Tim Wood
@@ -1797,7 +1810,7 @@ moment.tz.load(require('./data/packed/latest.json'));
 	return moment;
 }));
 
-},{"moment":7}],7:[function(require,module,exports){
+},{"moment":8}],8:[function(require,module,exports){
 //! moment.js
 //! version : 2.11.0
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
@@ -5318,4 +5331,4 @@ moment.tz.load(require('./data/packed/latest.json'));
     return _moment;
 
 }));
-},{}]},{},[3]);
+},{}]},{},[4]);

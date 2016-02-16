@@ -21,13 +21,14 @@
            redirectTo: '/'
         });
     }
-  ]);
+  ])
 
-  engageDemo.controller('MainController', require('./controllers/controller'));
-  engageDemo.directive('adjustable', engageDirectives.adjustable);
-  engageDemo.directive('schedulable', engageDirectives.schedulable);
-  engageDemo.directive('selectable', engageDirectives.selectable);
-  engageDemo.directive('moveable', engageDirectives.moveable);
+  .controller('MainController', require('./controllers/controller'))
+  .directive('adjustable', engageDirectives.adjustable)
+  .directive('schedulable', engageDirectives.schedulable)
+  .directive('selectable', engageDirectives.selectable)
+  .directive('moveable', engageDirectives.moveable)
+  .directive('revealIf', require('./directives/reveal-if'));
 
 
 }());
