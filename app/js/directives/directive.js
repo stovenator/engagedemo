@@ -168,6 +168,7 @@ var selectable = /*@ngInject*/ function($compile, $document) {
                 $document.off('mouseup');
                 //Turn on the mousemove event for while the mouse is Up
                 $document.on('mousemove', selectMouseMoveMouseUp);
+                console.log("Fire event for item created. New times are: ", calculateText(highlightVals));
             }
 
             function addHighlight(offsetY){
@@ -365,9 +366,9 @@ var adjustable = /*@ngInject*/ function($document) {
                 }
             });
 
-            element.on('mousedown', adjMousedown);
+            element.on('mousedown', adjMouseDown);
 
-            function adjMousemove(event) {
+            function adjMouseMove(event) {
                 var newHeight = scope.adjusting.originalHeight;
                 var newTop = scope.adjusting.originalTop;
                 var yDistance = event.clientY - (scope.adjusting.startY - scope.adjusting.offsetY);
@@ -405,7 +406,7 @@ var adjustable = /*@ngInject*/ function($document) {
                 setAvailabilityBlockText({height: newHeight, top: newTop});
                 scrollWhileDragging(scope.adjusting.initialScrollTop, event.clientY);
             }
-            function adjMouseup(event) {
+            function adjMouseUp(event) {
                 $document.off('mouseup');
                 $document.off('mousemove');
                 scope.adjusting.state = false;
@@ -413,8 +414,12 @@ var adjustable = /*@ngInject*/ function($document) {
                 if (glassEl.length > 0){
                     glassEl.remove();
                 }
+                var se = element.parent();
+                var seTop = se.prop("offsetTop");
+                var seHeight = se.prop("offsetHeight");
+                console.log("Fire event for item adjusted. New times are: ", calculateText({height: seHeight, top: seTop}));
             }
-            function adjMousedown(event) {
+            function adjMouseDown(event) {
                 // Stop other click event underneath the selection
                 event.preventDefault();
                 event.stopPropagation();
@@ -430,8 +435,8 @@ var adjustable = /*@ngInject*/ function($document) {
                 var glassElement = '<div class="glass-viewport"> </div>';
                 element.append(glassElement);
 
-                $document.on('mousemove', adjMousemove);
-                $document.on('mouseup', adjMouseup);
+                $document.on('mousemove', adjMouseMove);
+                $document.on('mouseup', adjMouseUp);
             }
 
             function setAvailabilityBlockText(vals) {
@@ -487,6 +492,7 @@ var moveable = /*@ngInject*/ function($document) {
                 element.detach();
                 columnToAppend = angular.element(document.getElementById('timeslot-column-' + curSeColumn));
                 columnToAppend.append(element);
+                console.log("Fire event for item moved. New times are: ", calculateText({height: seHeight, top: seTop}));
             }
 
             function moveableMouseMove(event){
