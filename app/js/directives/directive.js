@@ -222,7 +222,7 @@ var selectable = /*@ngInject*/ function($compile, $document) {
                 var availElement = '<div moveable class="timeslots-selected cm-mark--storm is-show" id="' + UUID + '"> </div>';
                 var removeElement = '<div class="timeslots-remove" ng-click="removeSelectedTimeslot(' + UUID + ');$event.stopPropagation();$event.preventDefault();">X</div>';
                 var availInterior = '<div class="timeslots-selected-info"> </div>';
-                var titleElement = '<p class="timeslots-availTitle">My Availability</p>';
+                var titleElement = '<p class="timeslots-availTitle">My Event</p>';
                 var textElement = '<p class="timeslots-range"> </p>';
                 var adjElementTop = '<div class="hovercontainer-top" adjustable="" adjhandle="\'top\'" adjusting="adjusting"></div>';
                 var adjElementBottom = '<div class="hovercontainer-bottom" adjustable="" adjhandle="\'bottom\'" adjusting="adjusting"> <span class="hc-dot"> </span> <span class="hc-dot"> </span> <span class="hc-dot"> </span> </div>';
@@ -530,7 +530,6 @@ var moveable = /*@ngInject*/ function($document) {
                     top: offsetY + 'px',
                     zIndex: 5
                 });
-                console.log(clientX, seClientLeft, curSeColumn);
                 if (clientX < seClientLeft && curSeColumn > 0){
                     curSeColumn = curSeColumn - 1;
                     se.detach();
@@ -563,7 +562,7 @@ var moveable = /*@ngInject*/ function($document) {
                 var seHeight = element.prop("offsetHeight");
                 var shadowElement = '<div class="timeslots-selected cm-mark--storm is-show shadowelement"> </div>';
                 var shadowInterior = '<div class="timeslots-selected-info"> </div>';
-                var titleElement = '<p class="timeslots-availTitle">My Availability</p>';
+                var titleElement = '<p class="timeslots-availTitle">New Event</p>';
                 var textElement = '<p class="timeslots-range"> </p>';
                 element.parent().append(shadowElement);
                 var se = angular.element(document.querySelectorAll(".shadowelement"));
