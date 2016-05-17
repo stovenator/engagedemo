@@ -35,3 +35,5 @@ node_modules
 dist
 
 app/bower_components
+
+app/public/js/bundle.js
